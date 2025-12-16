@@ -1,0 +1,22 @@
+{
+  "name": "jamban",
+  "version": "1.0.0",
+  "description": "-gasan saorang haja, Mun handak ulah saorang",
+  "main": "check-deps.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^12.5.0",
+    "dotenv": "^17.2.3",
+    "node-telegram-bot-api": "^0.66.0",
+    "ssh2": "^1.17.0",
+    "strip-ansi": "^7.1.2"
+  }
+}
