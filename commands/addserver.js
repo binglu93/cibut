@@ -93,35 +93,69 @@ async function handleMessage(bot, msg) {
       return bot.sendMessage(chatId, `📦 Masukkan <b>Limit Add</b> (contoh: 20):\n\nKetik /batal untuk membatalkan.`, { parse_mode: 'HTML' });
 
     case 'limit':
-      if (isNaN(Number(text))) return bot.sendMessage(chatId, `⚠️ Limit harus berupa angka!`);
-      session.limit_add = Number(text);
+  if (isNaN(Number(text)))
+    return bot.sendMessage(chatId, `⚠️ Limit harus berupa angka!`);
+  session.limit_add = Number(text);
+  session.step = 'limit_quota';
+  return bot.sendMessage(
+    chatId,
+    `📦 Masukkan <b>Limit Quota</b> (contoh: 500GB / 1TB):\n\nKetik /batal untuk membatalkan.`,
+    { parse_mode: 'HTML' }
+  );
 
-      const newVps = {
-        id: session.id,
-        host: session.host,
-        port: session.port,
-        username: session.username,
-        password: session.password,
-        harga_per_hari: session.harga_per_hari,
-        limit_add: session.limit_add,
-      };
+case 'limit_quota':
+  session.limit_quota = text;
+  session.step = 'limit_ip';
+  return bot.sendMessage(
+    chatId,
+    `🔒 Masukkan <b>Limit IP</b> (contoh: 2):\n\nKetik /batal untuk membatalkan.`,
+    { parse_mode: 'HTML' }
+  );
 
-      const vpsList = readVpsFile();
-      if (vpsList.find(v => v.id.toLowerCase() === newVps.id.toLowerCase())) {
-        global.__addserver_sessions.delete(userId);
-        return bot.sendMessage(chatId, `⚠️ VPS dengan ID <b>${newVps.id}</b> sudah ada!`, { parse_mode: 'HTML' });
-      }
+case 'limit_ip':
+  if (isNaN(Number(text)))
+    return bot.sendMessage(chatId, `⚠️ Limit IP harus berupa angka!`);
+  session.limit_ip = Number(text);
 
-      vpsList.push(newVps);
-      saveVpsFile(vpsList);
-      global.__addserver_sessions.delete(userId);
+  const newVps = {
+    id: session.id,
+    host: session.host,
+    port: session.port,
+    username: session.username,
+    password: session.password,
+    harga_per_hari: session.harga_per_hari,
+    limit_add: session.limit_add,
+    limit_quota: session.limit_quota,
+    limit_ip: session.limit_ip
+  };
 
-      return bot.sendMessage(
-        chatId,
-        `✅ VPS baru berhasil ditambahkan:\n\n🖥️ <b>ID:</b> ${newVps.id}\n🌐 <b>Host:</b> ${newVps.host}\n💰 <b>Harga/hari:</b> ${newVps.harga_per_hari}\n📦 <b>Limit Add:</b> ${newVps.limit_add}`,
-        { parse_mode: 'HTML' }
-      );
+  const vpsList = readVpsFile();
+  if (vpsList.find(v => v.id.toLowerCase() === newVps.id.toLowerCase())) {
+    global.__addserver_sessions.delete(userId);
+    return bot.sendMessage(
+      chatId,
+      `⚠️ VPS dengan ID <b>${newVps.id}</b> sudah ada!`,
+      { parse_mode: 'HTML' }
+    );
   }
+
+  vpsList.push(newVps);
+  saveVpsFile(vpsList);
+  global.__addserver_sessions.delete(userId);
+
+  return bot.sendMessage(
+    chatId,
+`✅ VPS baru berhasil ditambahkan:
+
+🖥️ <b>ID:</b> ${newVps.id}
+🌐 <b>Host:</b> ${newVps.host}
+💰 <b>Harga/hari:</b> ${newVps.harga_per_hari}
+📦 <b>Limit Add:</b> ${newVps.limit_add}
+📦 <b>Limit Quota:</b> ${newVps.limit_quota}
+🔒 <b>Limit IP:</b> ${newVps.limit_ip}`,
+    { parse_mode: 'HTML' }
+  );
+ }
 }
 
 module.exports = {
@@ -129,4 +163,5 @@ module.exports = {
   description: 'Tambah server baru ke vps.json',
   execute,
   handleMessage,
+
 };
