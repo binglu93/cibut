@@ -1,4 +1,7 @@
-// index.js — Telegram bot (polling) + loader plugin + support sesi (+ auto-register user)
+// /jamban/index.js
+// Telegram bot (polling) + loader plugin + support sesi (+ auto-register user)
+// Ditulis dan diupdate oleh (Julak Bantur)
+// Bot ini disesuaikan dengan script local premium C1 by julak VPN
 const datauser = require('./commands/datauser');
 const { handleVpsPick } = require('./lib/addBaseWS');
 const renewVmess = require('./commands/renewvmess');
@@ -29,7 +32,7 @@ botCommands.push(hapusPurchase);
 // Simpan waktu start bot untuk perhitungan uptime
 global.__BOT_STARTED_AT = Date.now();
 
-// === QRIS CONFIG (jangan commit ke repo publik) ===
+// === QRIS CONFIG API ORDERKOUTA (jangan commit ke repo publik) ===
 global.qrisConfig = {
   username: "username_orkut_anda",
   token: "token_qr_orkut_anda",
@@ -39,7 +42,7 @@ global.qrisConfig = {
   codeqr: "codeqr_orkut_anda"
 };
 
-// ===== Token: .env atau hardcode fallback =====
+// ===== Token bot: dari .env atau HardCode fallback =====
 const HARDCODED_TOKEN = 'Token_bot_telegram_anda';
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN || HARDCODED_TOKEN;
 if (!TOKEN || TOKEN === 'PUT_YOUR_BOT_TOKEN_HERE') {
@@ -50,7 +53,7 @@ if (!TOKEN || TOKEN === 'PUT_YOUR_BOT_TOKEN_HERE') {
 // === Owner helper (hardcode di lib/owner.js)
 const { parseOwnerIds, isOwnerMsg } = require('./lib/owner');
 
-// ====== SQLITE: wallet.db (auto-register user) ======
+// ====== DATABSAE SQLITE: wallet.db (daftarkan otomatis user ke database) ======
 const DB_PATH = path.resolve(process.cwd(), 'julak', 'wallet.db');
 fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 const db = new Database(DB_PATH);
@@ -118,7 +121,7 @@ function loadCommands() {
 
       count++;
 
-      // register plugin jika ada register()
+      // Daftarkan plugin jika ada register()
       if (typeof mod.register === 'function' && !global.__registeredPlugins[name]) {
         try {
           mod.register(bot);
@@ -129,7 +132,7 @@ function loadCommands() {
         }
       }
     } catch (e) {
-      console.error(`❌  Gagal load plugin ${file}:`, e?.message || e);
+      console.error(`❌ Upss Gagal load plugin ${file}:`, e?.message || e);
     }
   }
 
@@ -137,7 +140,7 @@ function loadCommands() {
 }
 loadCommands();
 
-// ===== Parser command (prefix "/" & ".") =====
+// ===== Pengurai Perintah (awalan "/" & ".") =====
 function parseCommand(text = '') {
   const t = (text || '').trim();
   if (!t) return null;
@@ -163,16 +166,16 @@ bot.on('message', async (msg) => {
     const addserver = require('./commands/addserver');
     const handled = await addserver.handleMessage(bot, msg);
     if (handled) return;
-    // ====== Integrasi BROADCAST ======
+    // ====== Integrasi broadcast.js ======
     const broadcast = require('./commands/broadcast');
     const handledBroadcast = await broadcast.handleMessage(bot, msg);
     if (handledBroadcast) return;
-    // ====== Integrasi ADDSALDO ======
+    // ====== Integrasi addsaldo.js ======
     const addsaldo = require('./commands/addsaldo');
     const handledAddSaldo = await addsaldo.handleMessage(bot, msg);
     if (handledAddSaldo) return;
     
-        // ===== Integrasi DATAUSER =====
+        // ===== Integrasi datauser.js =====
     const handledDataUser = await datauser.execute(bot, msg);
     if (handledDataUser) return;
 
@@ -190,7 +193,7 @@ bot.on('message', async (msg) => {
       );
     }
 
-    // Admin-only /reload
+    // COMMAND RELOAD (Hanya admin)
     if (/^\/reload$/i.test(text)) {
       if (!isOwnerMsg(msg)) return bot.sendMessage(msg.chat.id, '❌  Command ini hanya untuk owner.');
       for (const k of commandMap.keys()) commandMap.delete(k);
@@ -199,7 +202,7 @@ bot.on('message', async (msg) => {
       return bot.sendMessage(msg.chat.id, '✅  Commands di-reload.');
     }
 
-    // Command prefix (misal /topupmanual, /approve)
+    // COMMAND PREFIX (misal /topupmanual, /approve)
     if (text.startsWith('/') || text.startsWith('.')) {
       const parsed = parseCommand(text);
       if (parsed) {
@@ -216,7 +219,7 @@ bot.on('message', async (msg) => {
       }
     }
 
-    // 👇 Teruskan pesan non-text ke plugin berbasis sesi
+    // Teruskan pesan non-text ke plugin berbasis sesi
     const key = `${msg.chat.id}:${msg.from.id}`;
     for (const n of ['topupmanual', 'trialssh','trialvmess','trialvless','trialtrojan','renewssh',
                      'addssh','addvmess','addvless','addtrojan','renewvless',
@@ -236,7 +239,6 @@ bot.on('message', async (msg) => {
 
 // ==============================
 // GLOBAL CALLBACK_QUERY HANDLER
-// (declare ONCE — outside of bot.on('message'))
 // ==============================
 bot.on('callback_query', async (query) => {
   const data = query.data || '';
@@ -367,7 +369,7 @@ bot.onText(/^\/start$/i, async (msg) => {
 
 bot.onText(/^\/help$/i, async (msg) => {
   ensureUser(msg);
-  await bot.sendMessage(msg.chat.id, '• /menu — menu bot\n• /batal — batal semua sesi aktif\n• /reload — reload plugin (owner)');
+  await bot.sendMessage(msg.chat.id, '• Ketik /menu — Untuk Menampilkan Menu Bot');
 });
 
 // ===== Info bot =====
