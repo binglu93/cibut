@@ -1,4 +1,6 @@
 // check-deps.js
+// Ditulis dan diupdate oleh (Julak Bantur)
+// Bot ini dibuat dan disesuaikan untuk autoscript C1 by Julak VPN
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -6,7 +8,7 @@ const path = require('path');
 const pkgPath = path.resolve(process.cwd(), 'package.json');
 
 if (!fs.existsSync(pkgPath)) {
-  console.error('❌ package.json tidak ditemukan di folder ini!');
+  console.error('❌ Upss File package.json tidak ditemukan di folder ini!');
   process.exit(1);
 }
 
@@ -25,4 +27,4 @@ for (const dep of Object.keys(deps)) {
   }
 }
 
-console.log('🎉 Semua dependencies siap dipakai!');
+console.log('🎉 Semua dependencies siap dipakai Broooo !');
