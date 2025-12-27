@@ -361,10 +361,6 @@ bot.onText(/^\/start$/i, async (msg) => {
   ensureUser(msg);
   const first = [msg.from.first_name, msg.from.last_name].filter(Boolean).join(' ')
                 || msg.from.username || 'teman';
-  await bot.sendMessage(
-    msg.chat.id,
-    `Halo ${first}! 👋\nKetik /menu atau .menu untuk fitur.\nKetik /batal untuk membatalkan proses.`
-  );
 });
 
 bot.onText(/^\/help$/i, async (msg) => {
